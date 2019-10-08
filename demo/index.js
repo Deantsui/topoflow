@@ -32,13 +32,16 @@ class Index {
             }],
             links: [{
                 from: 'router1',
-                to: 'switch2'
+                to: 'switch2',
+                // id:'1'
             }, {
                 from: 'server1',
-                to: 'switch2'
+                to: 'switch2',
+                id:'2'
             }, {
                 from: 'server2',
-                to: 'switch2'
+                to: 'switch2',
+                // id:'3'
             }]
         }
     }
@@ -48,7 +51,14 @@ class Index {
             eln: '#topoflow1',
             data: this.data,
             height: `700px`,
+            readOnly:true,
             // 模板
+            linkTemplate:{
+                defs:(defs)=>{
+                    defs.append('svg:path')
+                    .attr('d', 'M0,-5L10,0L0,5')
+                }
+            },
             nodeTemplate: {
                 router: {
                     width: 90,
@@ -111,9 +121,12 @@ class Index {
             onSelectNode: (eln, node) => {
                 console.log('onSelectNode', eln, node);
             },
-            onClearActiveElement: () => {
-                console.log('清空所有选中状态');
-            },            
+            onSelectLink: (eln, node) => {
+                console.log('onSelectLink', eln, node);
+            },
+            // onClearActiveElement: () => {
+            //     console.log('清空所有选中状态');
+            // },            
             onNodeContextMenuRender: (nodeInfo) => {
                 if (nodeInfo.contextType === 'node') {
                     return [
@@ -135,9 +148,9 @@ class Index {
                 }
                 console.log('menu click', node, action);
             },
-            onChange: data => {
-                console.log('data change', data);
-            },
+            // onChange: data => {
+            //     console.log('data change', data);
+            // },
             onConnect: (source, target) => {
                 console.log('on connect', source, target);
             },

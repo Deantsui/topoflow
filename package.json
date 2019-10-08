@@ -28,8 +28,9 @@
   },
   "homepage": "https://github.com/fefeng/topoflow#readme",
   "dependencies": {
-    "d3": "^4.12.2"
+    "d3": "4.12.2"
   },
+  "resolutions": { "d3-selection": "1.3.0" },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",

@@ -47,7 +47,7 @@ class Index {
         // 渲染链接
         if (!!links && links.length > 0) {
             links.forEach((link) => {
-                this.flow.addLink(this.flow.Nodes[link.from], this.flow.Nodes[link.to]);
+                this.flow.addLink(link);
             });
         }
         this.flow.isSetData = false;
@@ -69,8 +69,8 @@ class Index {
     }
 
     // 新增线条
-    addLink(sourceNode, targetNode) {
-        this.flow.addLink(sourceNode, targetNode);
+    addLink(link) {
+        this.flow.addLink(link);
     }
     // 删除节点
     forceDeleteLink(link) {

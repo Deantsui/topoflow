@@ -164,6 +164,7 @@ export default class Flow {
         let then = this;
 
         this.zoom();
+        this.nodaDrag();
 
         if (!!!this.config.readOnly) {
             this.svg.on('mousemove', function () {
@@ -201,7 +202,7 @@ export default class Flow {
                     if (flag === 2) {
                         let nodeID = d3.event.sourceEvent.target.parentNode.id;
                         let targetNode = then.Nodes[nodeID];
-                        then.addLink(then.sourceNode, targetNode);
+                        then.addLink({from:then.sourceNode.id,to:targetNode.id} );
                     }
                     if (then.config.hasOwnProperty('onDragLink')) {
                         let point = [d3.event.x, d3.event.y];
@@ -212,7 +213,6 @@ export default class Flow {
                     then.onDataChange('connect');
                 });
 
-            this.nodaDrag();
             this.hotKey();
         }
     }
@@ -443,22 +443,26 @@ export default class Flow {
 
         let points = mathLib.calculateLinkPoint(sourceNode, targetNode, this.config);
         if (points.length === 4) {
-            d3.select(`#${linkID}`).attr('d', `M${points[0]},${points[1]}L${points[2]}, ${points[3]}`);
+            d3.select(`#${link.domId}`).attr('d', `M${points[0]},${points[1]}L${points[2]}, ${points[3]}`);
         }
 
     }
 
     // 增加线条
-    addLink(sourceNode, targetNode) {
+    addLink(link) {
+        let {to,from,id} = link;
+        let sourceNode = this.Nodes[from];
+        let targetNode = this.Nodes[to];
         let then = this;
-        let gid = 'link_' + common.genUUID();
+        let gid = id || 'link_' + common.genUUID();
+        let domId = 'link_' + (id || common.genUUID());
         let points = mathLib.calculateLinkPoint(sourceNode, targetNode, this.config);
 
         if (points.length !== 4) {
             return;
         }
 
-        let path = this.pathGroup.append('svg:path').attr('id', gid).attr('class', 'link');
+        let path = this.pathGroup.append('svg:path').attr('id', domId).attr('class', 'link');
 
         if (this.config.hasOwnProperty('linkTemplate') && this.config.linkTemplate.hasOwnProperty('path')) {
             this.config.linkTemplate.path(path);
@@ -467,6 +471,7 @@ export default class Flow {
         }
 
         this.Links[gid] = {
+            domId: domId,
             id: gid,
             from: sourceNode.id,
             to: targetNode.id
@@ -482,6 +487,7 @@ export default class Flow {
             .on('click', function () {
                 then.clearAllActiveElement();
                 path.classed('active', true);
+                then.config.onSelectLink(this, {...link,domId:domId});
 
                 then.selectedElement = {
                     type: 'link',
