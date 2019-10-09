@@ -10,25 +10,29 @@ class Index {
                 type: 'router',
                 x: 300,
                 y: 150,
-                config: { name: "router1" }
+                name: "router1"
+                // config: {  }
             }, {
                 id: 'switch2',
                 type: 'switch',
                 x: 300,
                 y: 300,
-                config: { name: "switch2" }
+                name: "switch2"
+                // config: {  }
             }, {
                 id: 'server1',
                 type: 'server',
                 x: 500,
                 y: 450,
-                config: { name: "server1" }
+                name: "server1",
+                // config: {  }
             }, {
                 id: 'server2',
                 type: 'server',
                 x: 200,
                 y: 450,
-                config: { name: "server2" }
+                name: "server2"
+                // config: {  }
             }],
             links: [{
                 from: 'router1',
@@ -74,7 +78,7 @@ class Index {
                         node.append('text')
                             .attr('x', 10)
                             .attr('y', 40)
-                            .html(nodeInfo.config.name);
+                            .html(nodeInfo.name);
                     }
                 },
                 switch: {
@@ -94,7 +98,7 @@ class Index {
                         node.append('text')
                             .attr('x', 10)
                             .attr('y', 40)
-                            .html(nodeInfo.config.name);
+                            .html(nodeInfo.name);
                     }
                 },
                 server: {
@@ -114,7 +118,7 @@ class Index {
                         node.append('text')
                             .attr('x', 10)
                             .attr('y', 40)
-                            .html(nodeInfo.config.name);
+                            .html(nodeInfo.name);
                     }
                 }
             },
