@@ -454,7 +454,7 @@ export default class Flow {
         let sourceNode = this.Nodes[from];
         let targetNode = this.Nodes[to];
         let then = this;
-        let gid = id || 'link_' + common.genUUID();
+        let gid = id || common.genUUID();
         let domId = 'link_' + (id || common.genUUID());
         let points = mathLib.calculateLinkPoint(sourceNode, targetNode, this.config);
 
@@ -508,13 +508,13 @@ export default class Flow {
             if (promise instanceof Promise) {
                 promise.then(r => {
                     delete this.Links[link.id];
-                    d3.select(`#${link.id}`).remove();
+                    d3.select(`#${link.domId}`).remove();
                     this.onDataChange('deleteLink');
                 });
             }
         } else {
             delete this.Links[link.id];
-            d3.select(`#${link.id}`).remove();
+            d3.select(`#${link.domId}`).remove();
             this.onDataChange('deleteLink');
         }
     }

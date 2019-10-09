@@ -51,7 +51,7 @@ class Index {
             eln: '#topoflow1',
             data: this.data,
             height: `700px`,
-            readOnly:true,
+            // readOnly:true,
             // 模板
             linkTemplate:{
                 defs:(defs)=>{
@@ -148,9 +148,9 @@ class Index {
                 }
                 console.log('menu click', node, action);
             },
-            // onChange: data => {
-            //     console.log('data change', data);
-            // },
+            onChange: data => {
+                console.log('data change', data);
+            },
             onConnect: (source, target) => {
                 console.log('on connect', source, target);
             },
