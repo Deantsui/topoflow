@@ -52,6 +52,7 @@ export default class Flow {
         .on('tick', () => {
             this.Nodes.forEach(node => {
                 d3.select(`#${node.domId}`).attr('transform', () => `translate(${node.x},${node.y})`);
+                // d3.select(`#edit-${node.domId}`).attr('transform', () => `translate(${node.x},${node.y})`);
                 let linksID = Object.keys(then.Links);
                 linksID.map(linkID => {
                     let link = then.Links[linkID];
@@ -89,6 +90,9 @@ export default class Flow {
 
     // 当图形发生变更的时候进行图形的变化
     onDataChange(type) {
+        if (!!this.optionGroup) {
+            this.optionGroup.remove();
+        }
         if (!this.isSetData && this.config.hasOwnProperty('onDataChange')) {
             this.config.onDataChange(type);
         }
@@ -408,6 +412,7 @@ export default class Flow {
     }
 
     onNodeClick(node, nodeInfo) {
+        this.force.stop()
         let then = this;
         this.sourceNode = nodeInfo;
         let template = this.config.nodeTemplate[nodeInfo.type];
@@ -421,7 +426,7 @@ export default class Flow {
         }
 
         this.optionGroup = this.nodeGroup.append('g')
-                                .attr('id', nodeInfo.id);
+                                .attr('id', `edit-${nodeInfo.domId}`);
         if (!!!this.config.readOnly) {
             this.optionGroup.append('rect')
                 .style('fill', 'none')
