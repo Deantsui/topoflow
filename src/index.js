@@ -69,8 +69,8 @@ class Index {
     }
 
     // 新增线条
-    addLink(link) {
-        this.flow.addLink(link);
+    addLink(link,node2) {
+        this.flow.addLink(link,node2);
     }
     // 删除节点
     forceDeleteLink(link) {

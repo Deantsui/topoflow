@@ -227,6 +227,7 @@ export default class Flow {
 
                     if (flag === 2) {
                         let nodeID = d3.event.sourceEvent.target.parentNode.id;
+                        nodeID = nodeID.replace("node_","")
                         let targetNode = then.Nodes[nodeID];
                         then.addLink({from:then.sourceNode.id,to:targetNode.id} );
                     }
@@ -419,7 +420,8 @@ export default class Flow {
             this.optionGroup.remove();
         }
 
-        this.optionGroup = this.nodeGroup.append('g');
+        this.optionGroup = this.nodeGroup.append('g')
+                                .attr('id', nodeInfo.id);
         if (!!!this.config.readOnly) {
             this.optionGroup.append('rect')
                 .style('fill', 'none')
@@ -490,7 +492,11 @@ export default class Flow {
     }
 
     // 增加线条
-    addLink(link) {
+
+    addLink(link,node2) {
+        if(node2){
+            link = {from:link.id,to:node2.id}
+        }
         let {to,from,id} = link;
         let sourceNode = this.Nodes[from];
         let targetNode = this.Nodes[to];
