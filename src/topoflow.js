@@ -3,7 +3,6 @@ import * as d3 from 'd3';
 import contextmenu from './lib/contextmenu';
 import mathLib from './lib/math';
 import common from './lib/common';
-
 import './styles/index.css';
 
 export default class Flow {
@@ -25,7 +24,7 @@ export default class Flow {
         if (this.config.hasOwnProperty('onNodeContextMenuRender')) {
             this.initContextMenu();
         }
-
+        
         // 初始化画布
         this.svg = d3
             .select(config.eln)
@@ -33,9 +32,36 @@ export default class Flow {
             .attr('tabIndex', '0')
             .append('svg')
             .attr('id', `svg_${common.genUUID()}`)
-            .attr('width', '100%')
+            .attr('width', this.config.width ||'100%')
             .attr('height', this.config.height);
-
+        // 获取svg画布的宽度
+        let width = Number(this.svg.attr("width").replace('px',''));
+        // 获取svg画布的高度
+        let height = Number(this.svg.attr("height").replace('px',''))
+        // let height = 800;
+          //初始化force
+        let then =this;
+        this.force = d3.forceSimulation(Object.values(this.Nodes))
+        .alphaDecay(0.05) // 设置alpha衰减系数
+        .force("link", d3.forceLink(Object.values(this.Links)).id(function(d) {  return d.id; }).distance( config.distance || 5)) // distance为连线的距离设置
+        .force('collide', d3.forceCollide().radius(() => config.radius ||50)) // collide 为节点指定一个radius区域来防止节点重叠。
+        .force("charge", d3.forceManyBody().strength( config.strength ||-10))  // 节点间的作用力
+        .force("center",d3.forceCenter(width/2,height/2))
+        // .alpha(1)  // 设置alpha值，让里导向图有初始动力
+        .on('tick', () => {
+            Object.values(this.Nodes).forEach(node => {
+                d3.select(`#${node.domId}`).attr('transform', () => `translate(${node.x},${node.y})`);
+                // d3.select(`#edit-${node.domId}`).attr('transform', () => `translate(${node.x},${node.y})`);
+                let linksID = Object.keys(then.Links);
+                linksID.map(linkID => {
+                    let link = then.Links[linkID];
+                    if (node.id === link.from || node.id === link.to) {
+                        then.moveLink(link, linkID);
+                    }
+                });
+            })
+        })
+        // .restart();   // 启动仿真计时器
         // 初始化路径组信息
         this.pathGroup = this.svg.append('svg:g').attr('class', 'data-flow-path-group');
         this.nodeGroup = this.svg.append('svg:g').attr('class', 'data-flow-node-group');
@@ -63,6 +89,9 @@ export default class Flow {
 
     // 当图形发生变更的时候进行图形的变化
     onDataChange(type) {
+        if (!!this.optionGroup) {
+            this.optionGroup.remove();
+        }
         if (!this.isSetData && this.config.hasOwnProperty('onDataChange')) {
             this.config.onDataChange(type);
         }
@@ -112,8 +141,8 @@ export default class Flow {
                 arrowDefsDom.remove();
             }
         }
-        this.Nodes = [];
-        this.Links = [];
+        this.Nodes = {}
+        this.Links = {};
         this.initDefs();
         this.onDataChange('reset');
     }
@@ -153,7 +182,7 @@ export default class Flow {
         });
 
         // 限制缩放的范围
-        zoom.scaleExtent([0.7, 1.5]);
+        zoom.scaleExtent([0.2, 1.5]);
 
         // 使用移动和缩放并禁用双击
         this.svg.call(zoom).on('dblclick.zoom', null);
@@ -201,6 +230,7 @@ export default class Flow {
 
                     if (flag === 2) {
                         let nodeID = d3.event.sourceEvent.target.parentNode.id;
+                        nodeID = nodeID.replace("node_","")
                         let targetNode = then.Nodes[nodeID];
                         then.addLink({from:then.sourceNode.id,to:targetNode.id} );
                     }
@@ -221,27 +251,30 @@ export default class Flow {
     nodaDrag() {
         let nodeMouseXY = [];
         let then = this;
-        this.dragEvent = d3.drag()
-            .on('start', function () {
+        this.dragEvent = ()=>{
+            return d3.drag()
+            .on('start', function (d) {
+
                 nodeMouseXY = d3.mouse(this);
+                then.force.alphaTarget(0.002).restart();
                 if (!!then.optionGroup) {
                     then.optionGroup.remove();
                 }
             })
             .on('drag', function (d) {
+
                 let point = {
                     x: d3.event.x - nodeMouseXY[0],
                     y: d3.event.y - nodeMouseXY[1]
                 };
 
                 d3.select(this).attr('transform', `translate(${point.x},${point.y})`);
-
                 // 移动节点,线条跟着变化
-                let nodeID = this.id;
+                let nodeID = this.id.replace("node_","");
 
                 then.Nodes[nodeID].x = point.x;
                 then.Nodes[nodeID].y = point.y;
-
+                
                 let linksID = Object.keys(then.Links);
                 linksID.map(linkID => {
                     let link = then.Links[linkID];
@@ -251,8 +284,11 @@ export default class Flow {
                 });
             })
             .on('end', function () {
+
                 then.onDataChange('moveNode');
+
             });
+        }
     }
 
     // 删除节点和线条的快捷键
@@ -283,8 +319,8 @@ export default class Flow {
             }
         }
 
+        d3.select('#' + node.domId).remove();
         delete this.Nodes[nodeID];
-        d3.select('#' + nodeID).remove();
 
         let linksID = Object.keys(this.Links);
         linksID.map((linkID) => {
@@ -307,7 +343,7 @@ export default class Flow {
         let nodeInfo = this.Nodes[nodeID];
         nodeInfo.selected = true;
 
-        let node = d3.select(`#${nodeID}`);
+        let node = d3.select(`#${nodeInfo.domId}`);
         node.classed('active', true)
 
         this.selectedElement = {
@@ -322,13 +358,15 @@ export default class Flow {
         let then = this;
 
         if (!!!nodeInfo.id) {
-            nodeInfo.id = 'node_' + common.genUUID();
+            nodeInfo.id = common.genUUID();
         }
-
+        nodeInfo.domId = 'node_' + nodeInfo.id
         if (!this.config.nodeTemplate.hasOwnProperty(nodeInfo.type)) {
             return;
         }
-
+        nodeInfo.index = this.Nodes.length; 
+        // nodeInfo.fx = null;   // 当节点的fx、fy都为null时，节点处于活动状态
+        // nodeInfo.fy = null;  
         let template = this.config.nodeTemplate[nodeInfo.type];
 
         nodeInfo.width = template.width;
@@ -337,7 +375,7 @@ export default class Flow {
         let node = this.nodeGroup
             .append('g')
             .attr('class', 'node')
-            .attr('id', nodeInfo.id)
+            .attr('id', nodeInfo.domId)
             .on('contextmenu', function () {
                 d3.event.preventDefault();
                 if (then.config.hasOwnProperty('onNodeContextMenuRender')) {
@@ -353,7 +391,7 @@ export default class Flow {
 
 
         if (!!this.dragEvent) {
-            node.call(this.dragEvent);
+            node.call(this.dragEvent());
         }
 
         // 调用参数定义的        
@@ -362,10 +400,15 @@ export default class Flow {
         // 保存节点信息        
         this.Nodes[nodeInfo.id] = nodeInfo;
         this.onDataChange('addNode');
+        then.force.nodes(Object.values(this.Nodes))
+        .force("link", d3.forceLink(Object.values(then.Links)).id(function(d) {return d.id; }).distance(40)) // distance为连线的距离设置
+        then.force.alpha(1).restart();
+
         return nodeInfo;
     }
 
     onNodeClick(node, nodeInfo) {
+        this.force.stop()
         let then = this;
         this.sourceNode = nodeInfo;
         let template = this.config.nodeTemplate[nodeInfo.type];
@@ -378,7 +421,8 @@ export default class Flow {
             this.optionGroup.remove();
         }
 
-        this.optionGroup = this.nodeGroup.append('g');
+        this.optionGroup = this.nodeGroup.append('g')
+                                .attr('id', `edit-${nodeInfo.domId}`);
         if (!!!this.config.readOnly) {
             this.optionGroup.append('rect')
                 .style('fill', 'none')
@@ -449,7 +493,11 @@ export default class Flow {
     }
 
     // 增加线条
-    addLink(link) {
+
+    addLink(link,node2) {
+        if(node2){
+            link = {from:link.id,to:node2.id}
+        }
         let {to,from,id} = link;
         let sourceNode = this.Nodes[from];
         let targetNode = this.Nodes[to];
@@ -474,7 +522,9 @@ export default class Flow {
             domId: domId,
             id: gid,
             from: sourceNode.id,
-            to: targetNode.id
+            to: targetNode.id,
+            source:sourceNode.id,
+            target:targetNode.id
         };
 
         path.attr('d', `M${points[0]}, ${points[1]}L${points[2]}, ${points[3]}`)
@@ -498,6 +548,10 @@ export default class Flow {
         if (!this.isSetData && this.config.hasOwnProperty('onConnect')) {
             this.config.onConnect(this.Links[gid], sourceNode, targetNode);
         }
+
+        then.force.nodes(Object.values(this.Nodes))
+        .force("link", d3.forceLink(Object.values(then.Links)).id(function(d) { return d.id; }).distance(40)) // distance为连线的距离设置
+        then.force.alpha(1).restart();
 
         this.onDataChange('addLink');
     }
