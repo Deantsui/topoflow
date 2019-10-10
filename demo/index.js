@@ -275,7 +275,6 @@ class Index {
                 type: '1',
                 x: 100,
                 y: 100,
-                id:992,
                 name 
             });
 
@@ -283,7 +282,6 @@ class Index {
                 type: '1',
                 x: 400,
                 y: 100,
-                id:991,
                 name 
             });
             this.topoFlow.addLink(node1, node2)

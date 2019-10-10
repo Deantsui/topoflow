@@ -50,7 +50,7 @@ export default class Flow {
         .force("center",d3.forceCenter(width/2,height/2))
         // .alpha(1)  // 设置alpha值，让里导向图有初始动力
         .on('tick', () => {
-            this.Nodes.forEach(node => {
+            Object.values(this.Nodes).forEach(node => {
                 d3.select(`#${node.domId}`).attr('transform', () => `translate(${node.x},${node.y})`);
                 // d3.select(`#edit-${node.domId}`).attr('transform', () => `translate(${node.x},${node.y})`);
                 let linksID = Object.keys(then.Links);
@@ -142,8 +142,8 @@ export default class Flow {
                 arrowDefsDom.remove();
             }
         }
-        this.Nodes = [];
-        this.Links = [];
+        this.Nodes = {}
+        this.Links = {};
         this.initDefs();
         this.onDataChange('reset');
     }
@@ -255,7 +255,6 @@ export default class Flow {
         this.dragEvent = ()=>{
             return d3.drag()
             .on('start', function (d) {
-                // console.log('dragEvent start')
 
                 nodeMouseXY = d3.mouse(this);
                 then.force.alphaTarget(0.002).restart();
@@ -264,7 +263,6 @@ export default class Flow {
                 }
             })
             .on('drag', function (d) {
-                // console.log('dragEvent drag')
 
                 let point = {
                     x: d3.event.x - nodeMouseXY[0],
@@ -287,7 +285,6 @@ export default class Flow {
                 });
             })
             .on('end', function () {
-                // console.log('dragEvent end')
 
                 then.onDataChange('moveNode');
 
