@@ -43,10 +43,9 @@ export default class Flow {
         let then =this;
         this.force = d3.forceSimulation(Object.values(this.Nodes))
         .alphaDecay(0.05) // 设置alpha衰减系数
-        .force("link", d3.forceLink(Object.values(this.Links)).id(function(d) {  return d.id; }).distance(5)) // distance为连线的距离设置
-        .force('collide', d3.forceCollide().radius(() => 50)) // collide 为节点指定一个radius区域来防止节点重叠。
-        .force("charge", d3.forceManyBody().strength(-10))  // 节点间的作用力
-        // .force("charge", d3.forceManyBody().strength(-10))  // 节点间的作用力
+        .force("link", d3.forceLink(Object.values(this.Links)).id(function(d) {  return d.id; }).distance( config.distance || 5)) // distance为连线的距离设置
+        .force('collide', d3.forceCollide().radius(() => config.radius ||50)) // collide 为节点指定一个radius区域来防止节点重叠。
+        .force("charge", d3.forceManyBody().strength( config.strength ||-10))  // 节点间的作用力
         .force("center",d3.forceCenter(width/2,height/2))
         // .alpha(1)  // 设置alpha值，让里导向图有初始动力
         .on('tick', () => {
