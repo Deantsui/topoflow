@@ -145,6 +145,8 @@ class Index {
             eln: '#topoflow1',
             data: this.data,
             // https://bl.ocks.org/steveharoz/8c3e2524079a8c440df60c1ab72b5d03
+            alphaDecay:0.1,
+            alpha:1,
             distance:40,
             radius:70,
             strength:-10,
@@ -220,9 +222,9 @@ class Index {
             onSelectLink: (eln, node) => {
                 console.log('onSelectLink', eln, node);
             },
-            // onClearActiveElement: () => {
-            //     console.log('清空所有选中状态');
-            // },            
+            onClearActiveElement: () => {
+                console.log('清空所有选中状态');
+            },            
             onNodeContextMenuRender: (nodeInfo) => {
                 if (nodeInfo.contextType === 'node') {
                     return [
