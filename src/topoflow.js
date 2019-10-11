@@ -42,7 +42,7 @@ export default class Flow {
           //初始化force
         let then =this;
         this.force = d3.forceSimulation(Object.values(this.Nodes))
-        .alphaDecay(0.05) // 设置alpha衰减系数
+        .alphaDecay(config.alphaDecay || 0.05) // 设置alpha衰减系数
         .force("link", d3.forceLink(Object.values(this.Links)).id(function(d) {  return d.id; }).distance( config.distance || 5)) // distance为连线的距离设置
         .force('collide', d3.forceCollide().radius(() => config.radius ||50)) // collide 为节点指定一个radius区域来防止节点重叠。
         .force("charge", d3.forceManyBody().strength( config.strength ||-10))  // 节点间的作用力
@@ -401,8 +401,8 @@ export default class Flow {
         this.Nodes[nodeInfo.id] = nodeInfo;
         this.onDataChange('addNode');
         then.force.nodes(Object.values(this.Nodes))
-        .force("link", d3.forceLink(Object.values(then.Links)).id(function(d) {return d.id; }).distance(40)) // distance为连线的距离设置
-        then.force.alpha(1).restart();
+        .force("link", d3.forceLink(Object.values(then.Links)).id(function(d) {return d.id; }).distance(then.config.distance||40)) // distance为连线的距离设置
+        then.force.alpha(then.config.alpha||1).restart();
 
         return nodeInfo;
     }
@@ -535,10 +535,11 @@ export default class Flow {
                 }
             })
             .on('click', function () {
-                then.clearAllActiveElement();
-                path.classed('active', true);
-                then.config.onSelectLink(this, {...link,domId:domId});
-
+                if (!!!this.config.readOnly) {
+                    then.clearAllActiveElement();
+                    path.classed('active', true);
+                    then.config.onSelectLink(this, {...link,domId:domId});
+                }
                 then.selectedElement = {
                     type: 'link',
                     id: gid
@@ -550,8 +551,8 @@ export default class Flow {
         }
 
         then.force.nodes(Object.values(this.Nodes))
-        .force("link", d3.forceLink(Object.values(then.Links)).id(function(d) { return d.id; }).distance(40)) // distance为连线的距离设置
-        then.force.alpha(1).restart();
+        .force("link", d3.forceLink(Object.values(then.Links)).id(function(d) { return d.id; }).distance(then.config.distance|| 40)) // distance为连线的距离设置
+        then.force.alpha(then.config.alpha||1).restart();
 
         this.onDataChange('addLink');
     }
