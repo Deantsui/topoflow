@@ -384,8 +384,10 @@ export default class Flow {
             })
             .on('click', function () {
                 then.config.onSelectNode(this, nodeInfo);
+                if (!!!then.config.readOnly) {
                 then.selectNode(nodeInfo.id);
                 then.onNodeClick(node, nodeInfo);
+                }
             })
             .attr('transform', `translate(${nodeInfo.x}, ${nodeInfo.y})`);
 
