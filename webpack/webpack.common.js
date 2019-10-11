@@ -40,6 +40,14 @@ module.exports = {
                 fallback: 'style-loader'
             }),
             exclude: /node_modules/
+        },
+        {
+            test: /\.(png|jpe?g|gif)$/i,
+            use: [
+            {
+                loader: 'file-loader',
+            },
+            ],
         }, {
             test: /\.js$/,
             loader: 'babel-loader',

@@ -2,7 +2,8 @@ import TopoFlow from '../lib';
 // import TopoFlow from '../src';
 import './index.scss'
 
-import testSvg from './test.svg'
+// import testSvg from './test.svg'
+import testSvg from './test.png'
 const json = `    
 {    "jumpCoreInfo": {
         "links": [
