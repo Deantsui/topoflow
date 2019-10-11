@@ -538,8 +538,8 @@ export default class Flow {
                 if (!!!then.config.readOnly) {
                     then.clearAllActiveElement();
                     path.classed('active', true);
-                    then.config.onSelectLink(this, {...link,domId:domId});
                 }
+                then.config.onSelectLink(this, {...link,domId:domId});
                 then.selectedElement = {
                     type: 'link',
                     id: gid
