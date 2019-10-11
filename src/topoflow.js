@@ -535,7 +535,7 @@ export default class Flow {
                 }
             })
             .on('click', function () {
-                if (!!!this.config.readOnly) {
+                if (!!!then.config.readOnly) {
                     then.clearAllActiveElement();
                     path.classed('active', true);
                     then.config.onSelectLink(this, {...link,domId:domId});
