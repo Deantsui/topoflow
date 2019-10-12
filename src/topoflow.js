@@ -365,8 +365,7 @@ export default class Flow {
             return;
         }
         nodeInfo.index = this.Nodes.length; 
-        // nodeInfo.fx = null;   // 当节点的fx、fy都为null时，节点处于活动状态
-        // nodeInfo.fy = null;  
+
         let template = this.config.nodeTemplate[nodeInfo.type];
 
         nodeInfo.width = template.width;
@@ -386,10 +385,10 @@ export default class Flow {
                 then.config.onSelectNode(this, nodeInfo);
                 if (!!!then.config.readOnly) {
                 then.selectNode(nodeInfo.id);
-                then.onNodeClick(node, nodeInfo);
+                // then.onNodeClick(node, nodeInfo);
                 }
-            })
-            .attr('transform', `translate(${nodeInfo.x}, ${nodeInfo.y})`);
+            });
+            // .attr('transform', `translate(${nodeInfo.x}, ${nodeInfo.y})`);
 
 
         if (!!this.dragEvent) {
