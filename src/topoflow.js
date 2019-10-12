@@ -267,7 +267,6 @@ export default class Flow {
                     x: d3.event.x - nodeMouseXY[0],
                     y: d3.event.y - nodeMouseXY[1]
                 };
-                console.log(this);
                 d3.select(this).attr('transform', `translate(${point.x},${point.y})`);
                 // 移动节点,线条跟着变化
                 let nodeID = this.id.replace("node_","");
