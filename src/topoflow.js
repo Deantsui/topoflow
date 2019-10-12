@@ -254,14 +254,15 @@ export default class Flow {
         this.dragEvent = ()=>{
             return d3.drag()
             .on('start', function (d) {
-
+                console.log("start")
                 nodeMouseXY = d3.mouse(this);
-                then.force.alphaTarget(0.002).restart();
+                // then.force.alphaTarget(0.002).restart();
                 if (!!then.optionGroup) {
                     then.optionGroup.remove();
                 }
             })
             .on('drag', function (d) {
+                console.log("drag")
 
                 let point = {
                     x: d3.event.x - nodeMouseXY[0],
@@ -283,6 +284,7 @@ export default class Flow {
                 });
             })
             .on('end', function () {
+                console.log("end")
 
                 then.onDataChange('moveNode');
 
