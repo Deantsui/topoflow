@@ -11,14 +11,14 @@ $default:#e6e6e6;
             stroke-width: 1px;            
         }
         .link {
-            stroke: $link-color;
+            // stroke: $link-color;
             stroke-width: 4px;
             &.active {
                 stroke: $active-color;
                 cursor: pointer;
             }
             &:hover {
-                stroke-width: 5px;
+                stroke-width: 6px;
                 cursor: pointer;
             }
         }

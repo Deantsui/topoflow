@@ -102,19 +102,19 @@ export default class Flow {
         let defs = this.svg.append('svg:defs').attr('id', 'arrow-defs');
 
         // 自定义
-        if (this.config.hasOwnProperty('linkTemplate') && this.config.linkTemplate.hasOwnProperty('defs')) {
-            this.config.linkTemplate.defs(defs);
-        } else {
-            defs.append('svg:marker')
-                .attr('id', 'end-arrow')
-                .attr('viewBox', '0 -5 10 10')
-                .attr('refX', 6)
-                .attr('markerWidth', 5)
-                .attr('markerHeight', 5)
-                .attr('orient', 'auto')
-                .append('svg:path')
-                .attr('d', 'M0,-5L10,0L0,5');
-        }
+        // if (this.config.hasOwnProperty('linkTemplate') && this.config.linkTemplate.hasOwnProperty('defs')) {
+        //     this.config.linkTemplate.defs(defs);
+        // } else {
+        //     defs.append('svg:marker')
+        //         .attr('id', 'end-arrow')
+        //         .attr('viewBox', '0 -5 10 10')
+        //         .attr('refX', 6)
+        //         .attr('markerWidth', 5)
+        //         .attr('markerHeight', 5)
+        //         .attr('orient', 'auto')
+        //         .append('svg:path')
+        //         .attr('d', 'M0,-5L10,0L0,5');
+        // }
 
         this.dragLine = this.pathGroup.append('svg:path');
         if (this.config.hasOwnProperty('linkTemplate') && this.config.linkTemplate.hasOwnProperty('dragLink')) {
@@ -254,7 +254,6 @@ export default class Flow {
         this.dragEvent = ()=>{
             return d3.drag()
             .on('start', function (d) {
-                console.log("start")
                 nodeMouseXY = d3.mouse(this);
                 // then.force.alphaTarget(0.002).restart();
                 if (!!then.optionGroup) {
@@ -262,8 +261,6 @@ export default class Flow {
                 }
             })
             .on('drag', function (d) {
-                console.log("drag")
-
                 let point = {
                     x: d3.event.x - nodeMouseXY[0],
                     y: d3.event.y - nodeMouseXY[1]
@@ -284,10 +281,7 @@ export default class Flow {
                 });
             })
             .on('end', function () {
-                console.log("end")
-
                 then.onDataChange('moveNode');
-
             });
         }
     }
@@ -442,7 +436,7 @@ export default class Flow {
                     .attr('fill', 'white')
                     .attr('stroke', '#06a0e9')
                     .attr('transform', () => {
-                        if (item === 'right') {
+                        if (item === 'right') {  
                             return `translate(${nodeInfo.x + nodeInfo.width}, ${nodeInfo.y + nodeInfo.height / 2})`;
                         } else if (item === 'left') {
                             return `translate(${nodeInfo.x}, ${nodeInfo.y + nodeInfo.height / 2})`;
@@ -500,7 +494,7 @@ export default class Flow {
         if(node2){
             link = {from:link.id,to:node2.id}
         }
-        let {to,from,id} = link;
+        let {to,from,id,type} = link;
         let sourceNode = this.Nodes[from];
         let targetNode = this.Nodes[to];
         let then = this;
@@ -513,11 +507,13 @@ export default class Flow {
         }
 
         let path = this.pathGroup.append('svg:path').attr('id', domId).attr('class', 'link');
-
-        if (this.config.hasOwnProperty('linkTemplate') && this.config.linkTemplate.hasOwnProperty('path')) {
-            this.config.linkTemplate.path(path);
+        if (this.config.hasOwnProperty('linkTemplate') && this.config.linkTemplate.hasOwnProperty(type)) {
+            if(this.config.linkTemplate[type].hasOwnProperty('renderNode')){
+                this.config.linkTemplate[type].renderNode(path);
+            }
         } else {
-            path.style('marker-end', 'url(#end-arrow)')
+            path.attr('stroke', '#c0beb0')
+            // path.style('marker-end', 'url(#end-arrow)')
         }
 
         this.Links[gid] = {
@@ -558,7 +554,10 @@ export default class Flow {
 
         this.onDataChange('addLink');
     }
-
+    rearrangement(){
+        this.clearAllActiveElement();
+        this.force.alpha(this.config.alpha||1).restart();
+    }
     deleteLink(link, type) {
         if (type !== 'force' && !this.isSetData && this.config.hasOwnProperty('onDeleteLink')) {
             let promise = this.config.onDeleteLink(link);

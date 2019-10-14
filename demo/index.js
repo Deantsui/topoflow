@@ -10,62 +10,84 @@ const json = `
             {
                 "from": "235834",
                 "id": null,
-                "to": "235371"
+                "to": "235371",
+                "type": "2"
+
             },
             {
                 "from": "235371",
                 "id": "13054",
-                "to": "235390"
+                "to": "235390",
+                "type": "2"
+
             },
             {
                 "from": "235390",
                 "id": "13055",
                 "to": "235379"
+
             },
             {
                 "from": "235379",
                 "id": "13056",
                 "to": "235378"
+
             },
             {
                 "from": "235378",
                 "id": null,
-                "to": "235835"
+                "to": "235835",
+                "type": "1"
+
             },
             {
                 "from": "235839",
                 "id": null,
-                "to": "235378"
+                "to": "235378",
+                "type": "1"
+
             },
             {
                 "from": "235378",
                 "id": "13056",
-                "to": "235379"
+                "to": "235379",
+                "type": "1"
+
             },
             {
                 "from": "235379",
                 "id": "13057",
-                "to": "235382"
+                "to": "235382",
+                "type": "1"
+
             },
             {
                 "from": "235382",
                 "id": null,
-                "to": "235840"
+                "to": "235840",
+                "type": "1"
+
             },
             {
                 "from": "235382",
                 "id": "13058",
-                "to": "235386"
+                "to": "235386",
+                "type": "1"
+
             },
             {
                 "from": "235386",
                 "id": "13059",
-                "to": "235389"
+                "to": "235389",
+                "type": "1"
+
             },
             {
                 "from": "235389",
                 "id": null,
-                "to": "235841"
+                "to": "235841",
+                "type": "1"
+
             }
         ],
         "nodes": [
@@ -156,9 +178,11 @@ class Index {
             // readOnly:true,
             // 模板
             linkTemplate:{
-                defs:(defs)=>{
-                    defs.append('svg:path')
-                    .attr('d', 'M0,-5L10,0L0,5')
+                "2":{
+                    renderNode:(defs)=>{
+                        defs
+                        .attr('stroke', '#F00')
+                    }
                 }
             },
             nodeTemplate: {
@@ -276,6 +300,9 @@ class Index {
         });
         document.querySelector('#getNodes').addEventListener('click', () => {
             console.log("getNodes",this.topoFlow.getNodes())
+        });
+        document.querySelector('#rearrangement').addEventListener('click', () => {
+            console.log("rearrangement",this.topoFlow.rearrangement())
         });
         // 创建节点
         document.querySelector('#btn2').addEventListener('click', () => {

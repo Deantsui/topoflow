@@ -80,7 +80,9 @@ class Index {
     deleteLink(link) {
         return this.flow.deleteLink(link);
     }
-
+    rearrangement(){
+        return this.flow.rearrangement();
+    }
     getNodes() {
         let nodes = this.flow.Nodes;
         let nodesID = Object.keys(nodes);
