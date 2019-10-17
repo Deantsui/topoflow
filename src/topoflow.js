@@ -261,13 +261,14 @@ export default class Flow {
                 }
             })
             .on('drag', function (d) {
+
                 let point = {
                     x: d3.event.x - nodeMouseXY[0],
                     y: d3.event.y - nodeMouseXY[1]
                 };
                 d3.select(this).attr('transform', `translate(${point.x},${point.y})`);
                 // 移动节点,线条跟着变化
-                let nodeID = this.id.replace("node_","");
+                let nodeID = this.attributes.bid.nodeValue;
 
                 then.Nodes[nodeID].x = point.x;
                 then.Nodes[nodeID].y = point.y;
@@ -351,11 +352,12 @@ export default class Flow {
     // 新增一个节点
     addNode(nodeInfo) {
         let then = this;
+        let uuid = common.genUUID();
 
         if (!!!nodeInfo.id) {
-            nodeInfo.id = common.genUUID();
+            nodeInfo.id = uuid;
         }
-        nodeInfo.domId = 'node_' + nodeInfo.id
+        nodeInfo.domId = 'node_' + uuid
         if (!this.config.nodeTemplate.hasOwnProperty(nodeInfo.type)) {
             return;
         }
@@ -370,6 +372,7 @@ export default class Flow {
             .append('g')
             .attr('class', 'node')
             .attr('id', nodeInfo.domId)
+            .attr('bid', nodeInfo.id)
             .on('contextmenu', function () {
                 d3.event.preventDefault();
                 if (then.config.hasOwnProperty('onNodeContextMenuRender')) {
