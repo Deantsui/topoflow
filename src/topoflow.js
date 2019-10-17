@@ -229,8 +229,9 @@ export default class Flow {
                     });
 
                     if (flag === 2) {
-                        let nodeID = d3.event.sourceEvent.target.parentNode.id;
-                        nodeID = nodeID.replace("node_","")
+                        // let nodeID = d3.event.sourceEvent.target.parentNode.id;
+                        let nodeID = d3.event.sourceEvent.target.parentNode.attributes.bid.nodeValue;
+                        // nodeID = nodeID.replace("node_","")
                         let targetNode = then.Nodes[nodeID];
                         then.addLink({from:then.sourceNode.id,to:targetNode.id} );
                     }
